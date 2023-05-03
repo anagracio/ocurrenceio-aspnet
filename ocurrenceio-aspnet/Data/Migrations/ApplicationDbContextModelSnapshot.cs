@@ -236,7 +236,7 @@ namespace ocurrenceio_aspnet.Data.Migrations
 
                     b.HasIndex("ListReportStateId");
 
-                    b.ToTable("ReportReportState");
+                    b.ToTable("ReportReportState", (string)null);
                 });
 
             modelBuilder.Entity("ocurrenceio_aspnet.Models.Report", b =>
@@ -261,7 +261,7 @@ namespace ocurrenceio_aspnet.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Report");
+                    b.ToTable("Report", (string)null);
                 });
 
             modelBuilder.Entity("ocurrenceio_aspnet.Models.ReportImage", b =>
@@ -282,7 +282,7 @@ namespace ocurrenceio_aspnet.Data.Migrations
 
                     b.HasIndex("ReportFK");
 
-                    b.ToTable("ReportImage");
+                    b.ToTable("ReportImage", (string)null);
                 });
 
             modelBuilder.Entity("ocurrenceio_aspnet.Models.ReportState", b =>
@@ -298,7 +298,7 @@ namespace ocurrenceio_aspnet.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReportState");
+                    b.ToTable("ReportState", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
