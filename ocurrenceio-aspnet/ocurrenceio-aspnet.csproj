@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-ocurrenceio_aspnet-6fb1f828-dafd-4640-9a94-3851d15607cd</UserSecretsId>
     <RootNamespace>ocurrenceio_aspnet</RootNamespace>
