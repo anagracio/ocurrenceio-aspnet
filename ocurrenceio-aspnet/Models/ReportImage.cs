@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ocurrenceio_aspnet.Models {
     /// <summary>
@@ -12,6 +13,8 @@ namespace ocurrenceio_aspnet.Models {
         /// <summary>
         /// The Report Image name
         /// </summary>
+
+        [Display(Name = "Nome")]
         public string Name { get; set; }
 
         //***********************************
