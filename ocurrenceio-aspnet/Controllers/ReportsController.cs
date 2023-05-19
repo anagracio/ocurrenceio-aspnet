@@ -22,7 +22,7 @@ namespace ocurrenceio_aspnet.Controllers
         // GET: Reports
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Report.ToListAsync());
+            return View(await _context.Report.ToListAsync());
         }
 
         // GET: Reports/Details/5
@@ -56,11 +56,81 @@ namespace ocurrenceio_aspnet.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,Latitude,Longitude")] Report report, List<IFormFile> images)
         {
+            // variable to check if the image is valid
+            var imgValidationFlag = false;
+            // validates each image, if one of them is not valid, the flag is set to true
+            foreach (var image in images)
+            {
+                if (image != null && image.Length > 0)
+                {
+                    if (!(image.ContentType == "image/jpeg" || image.ContentType == "image/png" || image.ContentType == "image/jpg"))
+                    {
+                        imgValidationFlag = true;
+                        break;
+                    }
+                }
+            }
+
             if (ModelState.IsValid)
             {
+                // Check if the image is valid, if not, return the view with the error message
+                if (imgValidationFlag)
+                {
+                    ModelState.AddModelError(string.Empty, "The image must be a JPEG, PNG or JPG.");
+                    return View(report);
+                }
+
+                // Add the report to the context, but don't save changes yet
                 _context.Add(report);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+
+                    // Process uploaded images and associate them with the new report
+                    foreach (var image in images)
+                    {
+                        // Generate a unique filename for the image
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+
+                        // Define the path where the image will be saved
+                        var imagePath = Path.Combine("Photos", fileName);
+
+                        // Save the image file to the server
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath);
+
+                        try
+                        {
+                            // Save the image file to the server
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await image.CopyToAsync(stream);
+                            }
+
+                            // Create a new ReportImage object and associate it with the new report
+                            var reportImage = new ReportImage
+                            {
+                                ReportFK = report.Id,
+                                Name = imagePath
+                            };
+                            _context.ReportImage.Add(reportImage);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Handle any exceptions that occur during the image saving process
+                            ModelState.AddModelError(string.Empty, $"Error saving image: {ex.Message}");
+                        }
+
+                    }
+                    // Save all changes to the database
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    // Handle any exceptions that occur during saving changes to the database
+                    ModelState.AddModelError(string.Empty, $"Error saving changes: {ex.Message}");
+                }
             }
             return View(report);
         }
@@ -148,14 +218,14 @@ namespace ocurrenceio_aspnet.Controllers
             {
                 _context.Report.Remove(report);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ReportExists(int id)
         {
-          return _context.Report.Any(e => e.Id == id);
+            return _context.Report.Any(e => e.Id == id);
         }
     }
 }
