@@ -34,6 +34,7 @@ namespace ocurrenceio_aspnet.Controllers
             }
 
             var report = await _context.Report
+                .Include(r => r.ListReportImage)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (report == null)
             {
