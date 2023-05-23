@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ocurrenceio_aspnet.Models;
 
@@ -8,7 +9,24 @@ namespace ocurrenceio_aspnet.Data {
             : base(options) {
         }
 
-        // Definition of project's table
+        /// <summary>
+        /// it executes code before the creation of model
+        /// </summary>
+        /// <param name="modelBuilder"></param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            // imports the previous execution of this method
+            base.OnModelCreating(modelBuilder);
+            //*****************************************
+            // add, at this point, your new code
+
+            // seed the Roles data
+            modelBuilder.Entity<IdentityRole>().HasData(
+              new IdentityRole { Id = "u", Name = "User", NormalizedName = "USER" },
+              new IdentityRole { Id = "a", Name = "Admin", NormalizedName = "ADMIN" }
+            );
+        }
+
+        // Definition of project's tables
         public DbSet<Report> Report { get; set; }
         public DbSet<ReportImage> ReportImage { get; set; } 
         public DbSet<ReportState> ReportState { get; set; }
