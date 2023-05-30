@@ -46,7 +46,7 @@
             @foreach (var image in Model.ListReportImage)
             {
                 <div class="col-md-3">
-                    <img src="~/@Url.Content(image.Name.Replace('\\', '/'))" alt="Report Image" class="img-thumbnail" />
+                    <img src="~/@Url.Content(image.Name.Replace('\\', '/'))" alt="Report Image" class="img-thumbnail" width="200px"/>
                 </div>
             }
         </div>

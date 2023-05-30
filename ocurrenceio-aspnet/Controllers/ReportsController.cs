@@ -12,11 +12,25 @@ namespace ocurrenceio_aspnet.Controllers
 {
     public class ReportsController : Controller
     {
+        /// <summary>
+        /// reference the application database
+        /// </summary>
         private readonly ApplicationDbContext _context;
 
-        public ReportsController(ApplicationDbContext context)
+        /// <summary>
+        /// all data about web hosting environment
+        /// </summary>
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        /// <summary>
+        /// Reports controller constructor
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="webHostEnvironment"></param>
+        public ReportsController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Reports
@@ -144,7 +158,10 @@ namespace ocurrenceio_aspnet.Controllers
                 return NotFound();
             }
 
-            var report = await _context.Report.FindAsync(id);
+            var report = await _context.Report
+                .Include(r => r.ListReportImage)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
             if (report == null)
             {
                 return NotFound();
@@ -157,7 +174,7 @@ namespace ocurrenceio_aspnet.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Latitude,Longitude")] Report report)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Latitude,Longitude")] Report report, List<IFormFile> images, int[] deleteImageIds)
         {
             if (id != report.Id)
             {
