@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,30 +22,14 @@ namespace ocurrenceio_aspnet.Controllers
         }
 
         // GET: ReportStates
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> Index()
         {
               return View(await _context.ReportState.ToListAsync());
         }
 
-        // GET: ReportStates/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.ReportState == null)
-            {
-                return NotFound();
-            }
-
-            var reportState = await _context.ReportState
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (reportState == null)
-            {
-                return NotFound();
-            }
-
-            return View(reportState);
-        }
-
         // GET: ReportStates/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -54,6 +40,7 @@ namespace ocurrenceio_aspnet.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,State")] ReportState reportState)
         {
             if (ModelState.IsValid)
@@ -66,6 +53,7 @@ namespace ocurrenceio_aspnet.Controllers
         }
 
         // GET: ReportStates/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.ReportState == null)
@@ -86,6 +74,7 @@ namespace ocurrenceio_aspnet.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,State")] ReportState reportState)
         {
             if (id != reportState.Id)
@@ -117,6 +106,7 @@ namespace ocurrenceio_aspnet.Controllers
         }
 
         // GET: ReportStates/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.ReportState == null)
@@ -137,6 +127,7 @@ namespace ocurrenceio_aspnet.Controllers
         // POST: ReportStates/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.ReportState == null)

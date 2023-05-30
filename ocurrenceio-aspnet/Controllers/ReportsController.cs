@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,12 +21,15 @@ namespace ocurrenceio_aspnet.Controllers
         }
 
         // GET: Reports
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> Index()
         {
               return View(await _context.Report.ToListAsync());
         }
 
         // GET: Reports/Details/5
+
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Report == null)
@@ -44,6 +48,8 @@ namespace ocurrenceio_aspnet.Controllers
         }
 
         // GET: Reports/Create
+
+        [Authorize(Roles = "Admin, User")]
         public IActionResult Create()
         {
             return View();
@@ -66,6 +72,8 @@ namespace ocurrenceio_aspnet.Controllers
         }
 
         // GET: Reports/Edit/5
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Report == null)
@@ -117,6 +125,7 @@ namespace ocurrenceio_aspnet.Controllers
         }
 
         // GET: Reports/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Report == null)
@@ -137,6 +146,7 @@ namespace ocurrenceio_aspnet.Controllers
         // POST: Reports/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Report == null)
