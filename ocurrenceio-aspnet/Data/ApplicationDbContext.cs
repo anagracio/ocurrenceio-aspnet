@@ -19,6 +19,13 @@ namespace ocurrenceio_aspnet.Data {
             //*****************************************
             // add, at this point, your new code
 
+            // seed of ReportState data
+            modelBuilder.Entity<ReportState>().HasData(
+              new ReportState { Id = 1, State = "Pending" },
+              new ReportState { Id = 2, State = "In Progress" },
+              new ReportState { Id = 3, State = "Done" }
+            );
+
             // seed the Roles data
             modelBuilder.Entity<IdentityRole>().HasData(
               new IdentityRole { Id = "u", Name = "User", NormalizedName = "USER" },
