@@ -48,6 +48,11 @@ namespace ocurrenceio_aspnet.Models {
         [RegularExpression("^[-+]?((1[0-7]\\d)|(\\d{1,2})|180)(\\.\\d+)?$", ErrorMessage = "Introduza uma coordenada entre -180 e 180.")]
         public string Longitude { get; set; }
 
+        /// <summary>
+        /// Represents the id of the user that created the report
+        /// </summary>
+        public string userId { get; set; }
+
         //***********************************
 
         /// <summary>
