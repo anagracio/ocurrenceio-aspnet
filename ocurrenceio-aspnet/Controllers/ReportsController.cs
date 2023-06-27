@@ -53,6 +53,7 @@ namespace ocurrenceio_aspnet.Controllers
 
             var report = await _context.Report
                 .Include(r => r.ListReportImage)
+                .Include(r => r.ListReportState)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (report == null)
             {
@@ -101,11 +102,18 @@ namespace ocurrenceio_aspnet.Controllers
                     return View(report);
                 }
 
-                // Add the report to the context, but don't save changes yet
-                _context.Add(report);
+                // Set the initial state of the report to "pending"
+                var initialState = await _context.ReportState.FirstOrDefaultAsync(s => s.Id == 1);
+                if (initialState == null) {
+                    ModelState.AddModelError(string.Empty, "Este estado não existe. Por favor, contacte o seu departamento IT.");
+                    return View(report);
+                }
+                report.ListReportState.Add(initialState);
 
                 try
                 {
+                    // Add the report to the context, but don't save changes yet
+                    _context.Add(report);
                     await _context.SaveChangesAsync();
 
                     // Process uploaded images and associate them with the new report
@@ -168,6 +176,7 @@ namespace ocurrenceio_aspnet.Controllers
 
             var report = await _context.Report
                 .Include(r => r.ListReportImage)
+                .Include(r => r.ListReportState)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (report == null)
@@ -182,6 +191,7 @@ namespace ocurrenceio_aspnet.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Latitude,Longitude")] Report report, List<IFormFile> images, int[] deleteImageIds)
         {
             if (id != report.Id)
@@ -212,6 +222,55 @@ namespace ocurrenceio_aspnet.Controllers
             return View(report);
         }
 
+        // POST: Reports/ChangeState/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ChangeState(int? id)
+        {
+            if (_context.Report == null) {
+                return Problem("Entity set 'ApplicationDbContext.Report' is null.");
+            }
+
+            var report = await _context.Report
+                .Include(r => r.ListReportImage)
+                .Include(r => r.ListReportState)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            // if report does exists
+            if (report != null) {
+                // add a new state to the report
+                // if the state is "pending", add the "in progress" state
+                // if the state is "in progress", add the "done" state
+                // if the state is "done", doesn't do anything
+                if (report.ListReportState.LastOrDefault().Id == 1) {
+                    var state = await _context.ReportState.FirstOrDefaultAsync(s => s.Id == 2);
+                    if (state == null) {
+                        ModelState.AddModelError(string.Empty, "Este estado não existe. Por favor, contacte o seu departamento IT.");
+                        return View(report);
+                    }
+                    report.ListReportState.Add(state);
+                } else if (report.ListReportState.LastOrDefault().Id == 2) {
+                    var state = await _context.ReportState.FirstOrDefaultAsync(s => s.Id == 3);
+                    if (state == null) {
+                        ModelState.AddModelError(string.Empty, "Este estado não existe. Por favor, contacte o seu departamento IT.");
+                        return View(report);
+                    }
+                    report.ListReportState.Add(state);
+                }
+
+                try {
+                    // Save all changes to the database
+                    await _context.SaveChangesAsync();
+                } catch (Exception ex) {
+                    // Handle any exceptions that occur during saving changes to the database
+                    ModelState.AddModelError(string.Empty, $"Error saving changes: {ex.Message}");
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         // GET: Reports/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
@@ -235,19 +294,38 @@ namespace ocurrenceio_aspnet.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Report == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Report'  is null.");
-            }
-            var report = await _context.Report.FindAsync(id);
-            if (report != null)
-            {
-                _context.Report.Remove(report);
+        public async Task<IActionResult> DeleteConfirmed(int id) {
+            if (_context.Report == null) {
+                return Problem("Entity set 'ApplicationDbContext.Report' is null.");
             }
 
-            await _context.SaveChangesAsync();
+            var report = await _context.Report
+                .Include(r => r.ListReportImage)
+                .Include(r => r.ListReportState)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (report != null) {
+                // Delete all report's images from the storage system
+                foreach (var image in report.ListReportImage) {
+                    var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, image.Name);
+
+                    // Delete the image file from the storage system
+                    if (System.IO.File.Exists(imagePath)) {
+                        System.IO.File.Delete(imagePath);
+                    }
+
+                    _context.ReportImage.Remove(image);
+                }
+
+                // Remove the association between the report and its states
+                report.ListReportState.Clear();
+
+                // Delete the report itself
+                _context.Report.Remove(report);
+
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Index));
         }
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ocurrenceio_aspnet.Data;
 
@@ -11,9 +12,11 @@ using ocurrenceio_aspnet.Data;
 namespace ocurrenceio_aspnet.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230623142510_ReportStateData")]
+    partial class ReportStateData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -151,24 +154,6 @@ namespace ocurrenceio_aspnet.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "02174cf0-9412-4cfe-afbf-59f706d72cf6",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "0f2e0340-2dcf-4b3b-9d9d-e50f2c4466b3",
-                            Email = "joca@occurrence.io",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "joca@occurrence.io",
-                            NormalizedUserName = "joca@occurrence.io",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDfzzY4V7x13WD/6eDcqKylFUMJisutyIA54cOZFYtjSmBY47hXqdaA3kbwuyQzIbA==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "",
-                            TwoFactorEnabled = false,
-                            UserName = "joca@occurrence.io"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -233,13 +218,6 @@ namespace ocurrenceio_aspnet.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "02174cf0-9412-4cfe-afbf-59f706d72cf6",
-                            RoleId = "a"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>

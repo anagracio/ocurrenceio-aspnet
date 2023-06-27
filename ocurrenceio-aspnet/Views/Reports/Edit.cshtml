@@ -40,21 +40,42 @@
     <div class="form-group">
         <label class = "col-sm-2">Current Images</label>
         <div class="">
-        @if (Model.ListReportImage.Any())
-        {
-            foreach (var image in Model.ListReportImage)
+            @if (Model.ListReportImage.Any())
             {
-                <div class="image-container">
-                    <img src="~/@Url.Content(image.Name.Replace('\\', '/'))" alt="Report Image" class="img-thumbnail" width="200px" />
-                    <button class="delete-button" onclick="deleteImage('@image.Id')">&#10006;</button>
-                </div>
+                foreach (var image in Model.ListReportImage)
+                {
+                    <div class="image-container">
+                        <img src="~/@Url.Content(image.Name.Replace('\\', '/'))" alt="Report Image" class="img-thumbnail" width="200px" />
+                        <button class="delete-button" onclick="deleteImage('@image.Id')">&#10006;</button>
+                    </div>
+                }
             }
-        }
         </div>
     </div>
     <br />
     <div class="form-group">
         <input type="submit" value="Save" class="btn btn-primary" />
+    </div>
+</form>
+
+<form asp-action="ChangeState">
+    <div class="row">
+        <div class="col-md-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label>Report's Current State</label>
+                @if (Model.ListReportState.Any()) {
+                    <input type="text" class="form-control" value="@Model.ListReportState.LastOrDefault().State" readonly />
+                }
+            </div>
+
+            @if (Model.ListReportState.Count() < 3) { 
+                <div class="form-group">
+                    <input type="submit" value="Change State" class="btn btn-primary" />
+                </div>
+            }
+        </div>
     </div>
 </form>
 
