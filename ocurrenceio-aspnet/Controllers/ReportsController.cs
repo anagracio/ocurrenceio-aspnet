@@ -109,11 +109,10 @@ namespace ocurrenceio_aspnet.Controllers
                 }
                 report.ListReportState.Add(initialState);
 
-                // Add the report to the context, but don't save changes yet
-                _context.Add(report);
-
                 try
                 {
+                    // Add the report to the context, but don't save changes yet
+                    _context.Add(report);
                     await _context.SaveChangesAsync();
 
                     // Process uploaded images and associate them with the new report
@@ -243,19 +242,38 @@ namespace ocurrenceio_aspnet.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Report == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Report'  is null.");
-            }
-            var report = await _context.Report.FindAsync(id);
-            if (report != null)
-            {
-                _context.Report.Remove(report);
+        public async Task<IActionResult> DeleteConfirmed(int id) {
+            if (_context.Report == null) {
+                return Problem("Entity set 'ApplicationDbContext.Report' is null.");
             }
 
-            await _context.SaveChangesAsync();
+            var report = await _context.Report
+                .Include(r => r.ListReportImage)
+                .Include(r => r.ListReportState)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (report != null) {
+                // Delete all report's images from the storage system
+                foreach (var image in report.ListReportImage) {
+                    var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, image.Name);
+
+                    // Delete the image file from the storage system
+                    if (System.IO.File.Exists(imagePath)) {
+                        System.IO.File.Delete(imagePath);
+                    }
+
+                    _context.ReportImage.Remove(image);
+                }
+
+                // Remove the association between the report and its states
+                report.ListReportState.Clear();
+
+                // Delete the report itself
+                _context.Report.Remove(report);
+
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
