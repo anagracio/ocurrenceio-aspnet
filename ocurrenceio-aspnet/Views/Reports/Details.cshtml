@@ -34,6 +34,18 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Longitude)
         </dd>
+        <dt class="col-sm-2">
+            Estados
+        </dt>
+        <dd class = "col-sm-10">
+            @if (Model.ListReportState.Any()) {
+                <ul>
+                    @foreach (var state in Model.ListReportState) {
+                        <li>@state.State</li>
+                    }
+                </ul>
+            }
+        </dd>
     </dl>
 </div>
 
