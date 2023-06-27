@@ -101,6 +101,14 @@ namespace ocurrenceio_aspnet.Controllers
                     return View(report);
                 }
 
+                // Set the initial state of the report to "pending"
+                var initialState = await _context.ReportState.FirstOrDefaultAsync(s => s.Id == 1);
+                if (initialState == null) {
+                    ModelState.AddModelError(string.Empty, "Este estado não existe. Por favor, contacte o seu departamento IT.");
+                    return View(report);
+                }
+                report.ListReportState.Add(initialState);
+
                 // Add the report to the context, but don't save changes yet
                 _context.Add(report);
 
