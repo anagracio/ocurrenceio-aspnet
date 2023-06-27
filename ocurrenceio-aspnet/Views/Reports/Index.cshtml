@@ -24,6 +24,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Longitude)
             </th>
+            <th>
+                Estado
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -41,6 +44,11 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Longitude)
+            </td>
+            <td>
+                @if (item.ListReportState.Any()) {
+                    @item.ListReportState.LastOrDefault().State
+                }
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

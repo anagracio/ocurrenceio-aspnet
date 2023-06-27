@@ -38,7 +38,21 @@ namespace ocurrenceio_aspnet.Controllers
         [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Report.ToListAsync());
+            // if role is user, list only user reports
+            if (User.IsInRole("User")) {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+                var applicationDbContext = _context.Report.Where(r => r.userId == user.Id);
+                var userReports = await applicationDbContext
+                    .Include(r => r.ListReportState)
+                    .ToListAsync();
+                return View(userReports);
+            }
+
+            var reports = await _context.Report
+                .Include(r => r.ListReportState)
+                .ToListAsync();
+
+            return View(reports);
         }
 
         // GET: Reports/Details/5
@@ -59,6 +73,11 @@ namespace ocurrenceio_aspnet.Controllers
             {
                 return NotFound();
             }
+
+            // get the user object
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+            // set the user name to the ViewBag to be used in the view
+            ViewBag.User = user.UserName;
 
             return View(report);
         }
@@ -109,6 +128,9 @@ namespace ocurrenceio_aspnet.Controllers
                     return View(report);
                 }
                 report.ListReportState.Add(initialState);
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+                report.userId = user.Id;
 
                 try
                 {
@@ -281,11 +303,18 @@ namespace ocurrenceio_aspnet.Controllers
             }
 
             var report = await _context.Report
+                .Include(r => r.ListReportImage)
+                .Include(r => r.ListReportState)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (report == null)
             {
                 return NotFound();
             }
+
+            // get the user object
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+            // set the user name to the ViewBag to be used in the view
+            ViewBag.User = user.UserName;
 
             return View(report);
         }
