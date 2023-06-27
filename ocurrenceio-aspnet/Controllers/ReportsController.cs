@@ -74,7 +74,9 @@ namespace ocurrenceio_aspnet.Controllers
                 return NotFound();
             }
 
+            // get the user object
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+            // set the user name to the ViewBag to be used in the view
             ViewBag.User = user.UserName;
 
             return View(report);
@@ -301,11 +303,18 @@ namespace ocurrenceio_aspnet.Controllers
             }
 
             var report = await _context.Report
+                .Include(r => r.ListReportImage)
+                .Include(r => r.ListReportState)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (report == null)
             {
                 return NotFound();
             }
+
+            // get the user object
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+            // set the user name to the ViewBag to be used in the view
+            ViewBag.User = user.UserName;
 
             return View(report);
         }
