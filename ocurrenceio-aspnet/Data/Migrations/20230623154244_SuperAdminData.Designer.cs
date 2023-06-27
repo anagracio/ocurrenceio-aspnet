@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ocurrenceio_aspnet.Data;
 
@@ -11,9 +12,11 @@ using ocurrenceio_aspnet.Data;
 namespace ocurrenceio_aspnet.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230623154244_SuperAdminData")]
+    partial class SuperAdminData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -341,23 +344,6 @@ namespace ocurrenceio_aspnet.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ReportState");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            State = "Pending"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            State = "In Progress"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            State = "Done"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
