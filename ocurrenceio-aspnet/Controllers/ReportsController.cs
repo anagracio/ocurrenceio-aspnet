@@ -38,6 +38,13 @@ namespace ocurrenceio_aspnet.Controllers
         [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> Index()
         {
+            // if role is user, list only user reports
+            if (User.IsInRole("User")) {
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+                var applicationDbContext = _context.Report.Where(r => r.userId == user.Id);
+                return View(await applicationDbContext.ToListAsync());
+            }
+
             return View(await _context.Report.ToListAsync());
         }
 
@@ -109,6 +116,9 @@ namespace ocurrenceio_aspnet.Controllers
                     return View(report);
                 }
                 report.ListReportState.Add(initialState);
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+                report.userId = user.Id;
 
                 try
                 {
