@@ -42,10 +42,17 @@ namespace ocurrenceio_aspnet.Controllers
             if (User.IsInRole("User")) {
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
                 var applicationDbContext = _context.Report.Where(r => r.userId == user.Id);
-                return View(await applicationDbContext.ToListAsync());
+                var userReports = await applicationDbContext
+                    .Include(r => r.ListReportState)
+                    .ToListAsync();
+                return View(userReports);
             }
 
-            return View(await _context.Report.ToListAsync());
+            var reports = await _context.Report
+                .Include(r => r.ListReportState)
+                .ToListAsync();
+
+            return View(reports);
         }
 
         // GET: Reports/Details/5
@@ -66,6 +73,9 @@ namespace ocurrenceio_aspnet.Controllers
             {
                 return NotFound();
             }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+            ViewBag.User = user.UserName;
 
             return View(report);
         }
