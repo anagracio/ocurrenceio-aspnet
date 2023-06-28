@@ -3,10 +3,10 @@
     ViewData["Title"] = "ElectAdmins";
 }
 
-<h1>ElectAdmins</h1>
+<h1>Lista de Utilizadores</h1>
 
-<table class="table">
-    <thead>
+<table class="table table-striped table-hover">
+    <thead style="background-color: #F97316;">
         <tr>
             <th>
                 Utilizador
@@ -40,11 +40,11 @@
             <td>
                 @if (user.Roles.Contains("Admin"))
                 {
-                    <a asp-action="RemoveAdmin" asp-route-id="@user.UserId">Remover Administrador</a>
+                    <a class="btn btn-primary" role="button" asp-action="RemoveAdmin" asp-route-id="@user.UserId">Remover Administrador</a>
                 }
                 else
                 {
-                    <a asp-action="MakeAdmin" asp-route-id="@user.UserId">Tornar Administrador</a>
+                    <a class="btn btn-primary" role="button" asp-action="MakeAdmin" asp-route-id="@user.UserId">Tornar Administrador</a>
                 }
             </td>
         </tr>
