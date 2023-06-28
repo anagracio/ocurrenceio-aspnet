@@ -8,10 +8,9 @@
 
 <h4>Report</h4>
 <hr />
-<form asp-action="Edit">
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
     <div class="row">
         <div class="col-md-4">
-
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -34,22 +33,30 @@
                 <input asp-for="Longitude" class="form-control" />
                 <span asp-validation-for="Longitude" class="text-danger"></span>
             </div>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label class = "col-sm-2">Current Images</label>
-        <div class="">
-            @if (Model.ListReportImage.Any())
-            {
-                foreach (var image in Model.ListReportImage)
+            <!-- Add more image input fields -->
+            <div class="form-group">
+                <label for="images" class="control-label">Images</label>
+                @* <input type="file" id="images" name="images" multiple class="form-control-file" /> *@
+                <input class="form-control-file" type="file" accept=".jpg,.jpeg,.png" name="images" multiple accept="image/*"  />
+            </div>
+            <!-- Display existing images -->
+            <div class="form-group">
+                <label class="control-label">Current Images</label>
+                @if (Model.ListReportImage.Any())
                 {
-                    <div class="image-container">
-                        <img src="~/@Url.Content(image.Name.Replace('\\', '/'))" alt="Report Image" class="img-thumbnail" width="200px" />
-                        <button class="delete-button" onclick="deleteImage('@image.Id')">&#10006;</button>
+                    <div class="row">
+                        @foreach (var image in Model.ListReportImage)
+                        {
+                            <div class="col-md-3">
+                                <img src="~/@Url.Content(image.Name.Replace('\\', '/'))" alt="Report Image" class="img-thumbnail" width="200px" />
+                                @* Add a delete button for each image *@
+                                <button type="button" class="btn btn-danger" >Delete</button>
+                            </div>
+                        }
                     </div>
                 }
-            }
+            </div>
+
         </div>
     </div>
     <br />
@@ -57,7 +64,7 @@
         <input type="submit" value="Save" class="btn btn-primary" />
     </div>
 </form>
-
+<br />
 <form asp-action="ChangeState">
     <div class="row">
         <div class="col-md-4">

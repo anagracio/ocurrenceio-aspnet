@@ -214,18 +214,78 @@ namespace ocurrenceio_aspnet.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Latitude,Longitude")] Report report, List<IFormFile> images, int[] deleteImageIds)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Latitude,Longitude")] Report report, List<IFormFile> images)
         {
             if (id != report.Id)
             {
                 return NotFound();
             }
 
+            // variable to check if the image is valid
+            var imgValidationFlag = false;
+            // validates each image, if one of them is not valid, the flag is set to true
+            foreach (var image in images)
+            {
+                if (image != null && image.Length > 0)
+                {
+                    if (!(image.ContentType == "image/jpeg" || image.ContentType == "image/png" || image.ContentType == "image/jpg"))
+                    {
+                        imgValidationFlag = true;
+                        break;
+                    }
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // Update the existing report properties
                     _context.Update(report);
+
+                    // Check if the image is valid, if not, return the view with the error message
+                    if (imgValidationFlag)
+                    {
+                        ModelState.AddModelError(string.Empty, "The image must be a JPEG, PNG or JPG.");
+                        return View(report);
+                    }
+
+                    // Process uploaded images and associate them with the new report
+                    foreach (var image in images)
+                    {
+                        // Generate a unique filename for the image
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+
+                        // Define the path where the image will be saved
+                        var imagePath = Path.Combine("Photos", fileName);
+
+                        // Save the image file to the server
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath);
+
+                        try
+                        {
+                            // Save the image file to the server
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await image.CopyToAsync(stream);
+                            }
+
+                            // Create a new ReportImage object and associate it with the new report
+                            var reportImage = new ReportImage
+                            {
+                                ReportFK = report.Id,
+                                Name = imagePath
+                            };
+                            _context.ReportImage.Add(reportImage);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Handle any exceptions that occur during the image saving process
+                            ModelState.AddModelError(string.Empty, $"Error saving image: {ex.Message}");
+                        }
+
+                    }
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
