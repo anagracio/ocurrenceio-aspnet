@@ -1,0 +1,53 @@
+﻿
+@{
+    ViewData["Title"] = "ElectAdmins";
+}
+
+<h1>ElectAdmins</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Utilizador
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Funções
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var user in Model) {
+        <tr>
+            <td>
+                @user.Username
+            </td>
+            <td>
+                @user.Email
+            </td>
+            <td>
+                <ul>
+                    @foreach (var role in user.Roles)
+                    {
+                        <li>@role</li>
+                    }
+                </ul>
+            </td>
+            <td>
+                @if (user.Roles.Contains("Admin"))
+                {
+                    <a asp-action="RemoveAdmin" asp-route-id="@user.UserId">Remover Administrador</a>
+                }
+                else
+                {
+                    <a asp-action="MakeAdmin" asp-route-id="@user.UserId">Tornar Administrador</a>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
