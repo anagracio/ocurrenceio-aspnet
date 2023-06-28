@@ -4,11 +4,9 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
-
+<h1>Detalhes da Ocorrência</h1>
+<hr />
 <div>
-    <h4>Report</h4>
-    <hr />
     <dl class="row">
         <dt class="col-sm-2">
             Criado por
@@ -60,11 +58,12 @@
 {
     <div>
         <dt class = "col-sm-2">Images</dt>
+        <br />
         <div class="row">
             @foreach (var image in Model.ListReportImage)
             {
                 <div class="col-md-3">
-                    <img src="~/@Url.Content(image.Name.Replace('\\', '/'))" alt="Report Image" class="img-thumbnail" width="200px"/>
+                    <img src="~/@Url.Content(image.Name.Replace('\\', '/'))" alt="Report Image" class="img-thumbnail" width="400px"/>
                 </div>
             }
         </div>
@@ -72,6 +71,6 @@
 }
 <br />
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-warning" role="button" asp-action="Edit" asp-route-id="@Model?.Id">Editar</a>
+    <a class="btn btn-secondary" role="button" asp-action="Index">Voltar à Lista</a>
 </div>

@@ -4,29 +4,22 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Lista de Ocurrências</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-dark" role="button" asp-action="Create">Criar uma nova Ocurrência</a>
 </p>
-<table class="table">
-    <thead>
+<table class="table table-striped table-hover">
+    <thead style="background-color: #F97316;">
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Latitude)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Longitude)
-            </th>
-            <th>
                 Estado
             </th>
+            <th></th>
+            <th></th>
             <th></th>
         </tr>
     </thead>
@@ -37,23 +30,18 @@
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Latitude)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Longitude)
-            </td>
-            <td>
                 @if (item.ListReportState.Any()) {
                     @item.ListReportState.LastOrDefault().State
                 }
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a class="btn btn-secondary" role="button" asp-action="Details" asp-route-id="@item.Id">Detalhes</a> 
+            </td>
+            <td>
+                <a class="btn btn-warning" role="button" asp-action="Edit" asp-route-id="@item.Id">Editar</a> 
+            </td>
+            <td>
+                <a class="btn btn-danger" role="button" asp-action="Delete" asp-route-id="@item.Id">Eliminar</a> 
             </td>
         </tr>
 }
