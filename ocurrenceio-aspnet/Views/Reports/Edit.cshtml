@@ -50,7 +50,7 @@
                     <br />
                     @* New Images *@
                     <div class="form-group row">
-                        <label for="images" class="col-sm-2 control-label">Images</label>
+                        <label for="images" class="col-sm-2 control-label">Imagens</label>
                         <div class="col-sm-10">
                             <input class="form-control-file" type="file" accept=".jpg,.jpeg,.png" name="images" multiple accept="image/*"  />
                         </div>
@@ -58,7 +58,7 @@
                     <br />
                     @* Display existing images *@
                     <div class="form-group">
-                        <label class="control-label">Current Images</label>
+                        <label class="control-label">Imagens da Ocorrências</label>
                         @if (Model.ListReportImage.Any())
                         {
                             <div class="row">
@@ -67,7 +67,7 @@
                                     <div class="col-md-3">
                                         <img src="~/@Url.Content(image.Name.Replace('\\', '/'))" alt="Report Image" class="img-thumbnail" width="200px" />
                                         @* Add a delete button for each image *@
-                                        <button type="button" class="btn btn-danger" >Delete</button>
+                                        <button type="button" class="btn btn-danger">Eliminar</button>
                                     </div>
                                 }
                             </div>

@@ -117,7 +117,7 @@ namespace ocurrenceio_aspnet.Controllers
                 // Check if the image is valid, if not, return the view with the error message
                 if (imgValidationFlag)
                 {
-                    ModelState.AddModelError(string.Empty, "The image must be a JPEG, PNG or JPG.");
+                    ModelState.AddModelError(string.Empty, "A imagem deve ter o formato JPEG, PNG ou JPG.");
                     return View(report);
                 }
 
@@ -246,7 +246,7 @@ namespace ocurrenceio_aspnet.Controllers
                     // Check if the image is valid, if not, return the view with the error message
                     if (imgValidationFlag)
                     {
-                        ModelState.AddModelError(string.Empty, "The image must be a JPEG, PNG or JPG.");
+                        ModelState.AddModelError(string.Empty, "A imagem deve ter o formato JPEG, PNG ou JPG.");
                         return View(report);
                     }
 
