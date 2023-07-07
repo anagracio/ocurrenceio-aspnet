@@ -173,7 +173,7 @@ namespace ocurrenceio_aspnet.Controllers.API
         /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<Report>> PostReport([FromForm] Report report, [FromForm] List<IFormFile> images)
-        {
+        {   
             // variable to check if the image is valid
             var imgValidationFlag = false;
             // validates each image, if one of them is not valid, the flag is set to true
@@ -250,6 +250,7 @@ namespace ocurrenceio_aspnet.Controllers.API
                 return BadRequest("Este estado não existe. Por favor, contacte o seu departamento IT.");
             }
             report.ListReportState.Add(initialState);
+            await _context.SaveChangesAsync();
 
 
             return CreatedAtAction("GetReport", new { id = report.Id }, report);
@@ -262,7 +263,6 @@ namespace ocurrenceio_aspnet.Controllers.API
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPost]
         [HttpPost("ChangeReportState/{id}")]
         public async Task<ActionResult<Report>> ChangeReportState([FromForm] int id)
         {
