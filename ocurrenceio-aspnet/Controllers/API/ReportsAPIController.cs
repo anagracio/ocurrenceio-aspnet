@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,9 +17,15 @@ namespace ocurrenceio_aspnet.Controllers.API
     {
         private readonly ApplicationDbContext _context;
 
-        public ReportsAPIController(ApplicationDbContext context)
+        /// <summary>
+        /// all data about web hosting environment
+        /// </summary>
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public ReportsAPIController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         /// <summary>
@@ -335,6 +342,36 @@ namespace ocurrenceio_aspnet.Controllers.API
             _context.Report.Remove(report);
             await _context.SaveChangesAsync();
 
+            return NoContent();
+        }
+
+        /// <summary>
+        /// DELETE: api/ReportsAPI/DeleteImage/5
+        /// Deletes a specific report image given an id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("DeleteImage/{id}")]
+        public async Task<IActionResult> DeleteImage(int id) {
+            var image = await _context.ReportImage.FindAsync(id);
+            if (image == null) {
+                return NotFound();
+            }
+
+            try {
+                var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, image.Name);
+
+                // Delete the image file from the storage system
+                if (System.IO.File.Exists(imagePath)) {
+                    System.IO.File.Delete(imagePath);
+                }
+
+                // Delete the image from the database
+                _context.ReportImage.Remove(image);
+                await _context.SaveChangesAsync();
+            } catch (Exception) {
+                return BadRequest("Erro ao eliminar imagem.");
+            }
             return NoContent();
         }
 
