@@ -25,6 +25,8 @@ namespace ocurrenceio_aspnet.Data {
               new ReportState { Id = 2, State = "In Progress" },
               new ReportState { Id = 3, State = "Done" }
             );
+
+            // code based on https://frankofoedu.medium.com/how-to-seed-identity-role-with-associated-user-in-asp-net-core-ef-core-e40ecd643d0f
             const string ADMIN_ID = "02174cf0-9412-4cfe-afbf-59f706d72cf6";
 
             // seed the Roles data
